@@ -21,14 +21,7 @@ export default [
     ],
       plugins: [ts()]
     },
-    {
-      input:'./src/core/index.ts',
-      output:{
-        file:path.resolve(__dirname,"./dist/index.d.ts"),
-        format:'es'
-      },
-      plugins: [dts()]
-    }
+  
    
 
   ]
