@@ -17,13 +17,21 @@ export default class Tracker {
       domTracker:false
     }
   }
+  //手动上报
+  public sendTracker<T>(data:T){
+    this.reportTracker(data)
+  }
 
-  //事件捕获器
+  //自动上报
   private  captrueEvent<T>(mouseEventList:string[],targetkey:string,data?:T){
     mouseEventList.forEach((e)=>{
       window.addEventListener(e,()=>{
         console.log('监听到了');
-        
+        this.reportTracker({
+          e,
+          targetkey,
+          data
+        })
       })
     })
 
@@ -36,12 +44,22 @@ export default class Tracker {
        this.captrueEvent(['hashchange'], 'hash-pv')
      }
   }
-
+ //设置用户自定义 uuid
   public setUserID<T extends Defaultoptions['uuid']>(uuid:T){
       this.data.uuid=uuid;
   }
-
+//设置用户自定义 extra
   public setExtra<T extends Defaultoptions['extra']>(extra:T){
            this.data.extra=extra
+  }
+
+  private reportTracker<T>(data:T){
+    const params=Object.assign(this.data,data,{time:new Date().getTime()});
+    let headers={
+      type:'application/x-www-form-urlencoded'
+    }
+    let blob = new Blob([JSON.stringify(params)], headers);
+    navigator.sendBeacon(this.data.requestUrl,blob)
+
   }
 }
