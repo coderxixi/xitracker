@@ -5,8 +5,10 @@ const enveList:string[]=['click','dblclick','contextmenu','mousedowm','mouseup',
 export default class Tracker {
   public data: Options;
   constructor(options: Options){
+    console.log('optp');
+    
     this.data = Object.assign(this.initDef(),options) 
-   
+    this.installTracker()
   }
   //初始化
   private initDef(): Defaultoptions{
@@ -68,6 +70,9 @@ export default class Tracker {
      if(this.data.domTracker){
       this.targetKeyReport()
      }
+     if(this.data.jsErrir){
+       this.errorEvent()
+     }
   }
  //设置用户自定义 uuid
   public setUserID<T extends Defaultoptions['uuid']>(uuid:T){
@@ -86,5 +91,35 @@ export default class Tracker {
     let blob = new Blob([JSON.stringify(params)], headers);
     navigator.sendBeacon(this.data.requestUrl,blob)
 
+  }
+  //js报错上传
+  private errorEvent(){
+    window.addEventListener('error',(e)=>{
+    this.reportTracker({
+      e:'error',
+      targetKey:'message',
+      message:e.message
+    })
+    })
+  }
+  // promise报错
+
+  private promiseReject(){
+    window.addEventListener('unhandledrejection',(e)=>{
+       e.promise.catch((error)=>{
+         this.reportTracker({
+           e: 'promise',
+           targetKey: 'message',
+           message: error
+         })
+       })
+    })
+  }
+
+  //搜集
+
+  private jsError(){
+    this.errorEvent();
+    this.promiseReject()
   }
 }
