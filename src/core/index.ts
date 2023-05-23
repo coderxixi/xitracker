@@ -1,9 +1,12 @@
 import { Defaultoptions, TrackerConfig, Options } from "../types/index"
-import { createHistoryEvent } from "../utils/pv"
+import { createHistoryEvent } from "../utils/pv";
+//事件
+const enveList:string[]=['click','dblclick','contextmenu','mousedowm','mouseup','mouseenter','mouseout']
 export default class Tracker {
   public data: Options;
   constructor(options: Options){
     this.data = Object.assign(this.initDef(),options) 
+   
   }
   //初始化
   private initDef(): Defaultoptions{
@@ -36,12 +39,34 @@ export default class Tracker {
     })
 
   }
+  //dom元素上报
+
+  private targetKeyReport(){
+    enveList.forEach((ev)=>{
+      window.addEventListener(ev,(e)=>{
+        const target=e.target as HTMLElement;
+        const targetkey = target.getAttribute('target-key');
+        if (targetkey){
+          this.reportTracker({
+            e:ev,
+            targetkey,
+            
+          })
+        }
+      })
+    })
+  }
   private installTracker(){
+    console.log('asfasf');
+    
      if(this.data.historyTracker){
        this.captrueEvent(['pushState', 'replaceState','popState'],'histtory-pv')
      }
      if(this.data.hashTracker){
        this.captrueEvent(['hashchange'], 'hash-pv')
+     }
+     if(this.data.domTracker){
+      this.targetKeyReport()
      }
   }
  //设置用户自定义 uuid
