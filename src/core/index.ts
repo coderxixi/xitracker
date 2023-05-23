@@ -32,5 +32,16 @@ export default class Tracker {
      if(this.data.historyTracker){
        this.captrueEvent(['pushState', 'replaceState','popState'],'histtory-pv')
      }
+     if(this.data.hashTracker){
+       this.captrueEvent(['hashchange'], 'hash-pv')
+     }
+  }
+
+  public setUserID<T extends Defaultoptions['uuid']>(uuid:T){
+      this.data.uuid=uuid;
+  }
+
+  public setExtra<T extends Defaultoptions['extra']>(extra:T){
+           this.data.extra=extra
   }
 }
